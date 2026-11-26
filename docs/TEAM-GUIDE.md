@@ -34,7 +34,7 @@ When a hook blocks you, it prints the reason and what to do instead. Do the fix 
 
 ## For the repo owner
 
-The `pre-push` hook also stops you from pushing to `main` from your machine. To update `main`, open a pull request from `Itr1` to `main` on GitHub and merge it in the browser. For a protection that no one can skip, turn on branch protection on GitHub (Settings, then Branches, then add a rule for `main` and `Itr1`): block force pushes and deletions, and for `main` require a pull request.
+Branch protection is on for `main` and `Itr1`, and it applies to admins too. On both branches, GitHub rejects force pushes and deletions. `main` also only accepts changes through a pull request, with no approval needed. To update `main`, open a pull request from `Itr1` to `main` and merge it, in the browser or with `gh pr create --base main --head Itr1` and `gh pr merge`. To change the rules, go to Settings, then Branches.
 
 ## Running it
 
