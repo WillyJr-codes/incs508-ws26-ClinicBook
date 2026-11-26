@@ -6,7 +6,7 @@ Who owns which part of `M1/SRS.md`. Only the owner edits a part. Claim a free pa
 
 | GitHub username | Full name | Git email(s) |
 |---|---|---|
-| | | |
+| WillyJr-codes | Mohammed Walid | mowalid420@gmail.com |
 | | | |
 | | | |
 | | | |
@@ -17,7 +17,7 @@ The owner of a feature owns its subsection under chapter 4 and every requirement
 
 | Feature | Name | Owner |
 |---|---|---|
-| F1 | | |
+| F1 | | WillyJr-codes |
 | F2 | | |
 | F3 | | |
 | F4 | | |
