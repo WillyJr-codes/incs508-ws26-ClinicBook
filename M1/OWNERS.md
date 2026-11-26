@@ -17,7 +17,7 @@ The owner of a feature owns its subsection under chapter 4 and every requirement
 
 | Feature | Name | Owner |
 |---|---|---|
-| F1 | | WillyJr-codes |
+| F1 | View Available Slots and Book an Appointment | WillyJr-codes |
 | F2 | | |
 | F3 | | |
 | F4 | | |
