@@ -2,13 +2,24 @@
 
 Each of us owns some parts of `M1/SRS.md`. You can write your parts yourself or have an AI agent draft them with the `fill-srs` skill. The skill interviews you, drafts only your parts, shows you the text, writes it after you approve, logs the AI use and pushes. It does not change anyone else's text.
 
+## Requirements
+
+| What | Needed? | Notes |
+|---|---|---|
+| Git | Yes | Git for Windows is enough on Windows. |
+| Write access to the repo | Yes | Ask the repo owner to add your GitHub account as a collaborator. Without it, the push at the end of a session fails. |
+| An AI agent you are signed in to | Yes | Claude Code, Codex, Copilot, Cursor or Gemini CLI. |
+| GitHub CLI (`gh`) | No | Lets the skill open issues for problems in other members' parts. Without it, you get a message to send the owner. To set it up, install it from https://cli.github.com and run `gh auth login`. |
+
+You don't need Python, Node or a separate humanizer install. The humanizer skill is already in the repo.
+
 ## Before your first session
 
 1. Clone the repo and run `git switch Itr1`.
 2. Set your git identity: `git config user.name "Your Name"` and `git config user.email "you@example.com"`.
 3. Open `M1/OWNERS.md` and add your row to the Members table (GitHub username, full name, git email). The skill can also do this for you.
 4. Agree with the team who takes which feature (F1 to F5) and which sections. Free parts have an empty Owner cell. The skill can claim free parts for you.
-5. Optional: install the GitHub CLI and run `gh auth login`. Then the skill opens issues for problems it finds in other people's parts instead of handing you a message to send.
+5. Optional: set up the GitHub CLI (see Requirements).
 
 ## Running it
 
