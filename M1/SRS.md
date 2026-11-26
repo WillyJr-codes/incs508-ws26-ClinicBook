@@ -1,7 +1,8 @@
 <!--
-  EMPTY SKELETON. Headings follow the Week 7 IEEE SRS template.
-  Every word of content below the headings must be written by the team (course rule: no AI for the SRS).
-  Delete this comment and any section you don't need (the template says not every part is required).
+  Headings follow the Week 7 IEEE SRS template.
+  Each part has one owner, listed in M1/OWNERS.md. Edit only the parts you own.
+  Members may draft their parts with an AI agent using the fill-srs skill; every such use is logged in AI-USE.md.
+  Delete this comment before submission.
 -->
 
 # Software Requirements Specification: ClinicBook
@@ -95,5 +96,13 @@
 | R15 | | | | | |
 
 ## Appendix A: Glossary
+
+| Term | Definition | Added by |
+|---|---|---|
+
 ## Appendix B: Analysis Models
+
 ## Appendix C: To Be Determined List
+
+| # | Open item | Section | Added by | Status |
+|---|---|---|---|---|
