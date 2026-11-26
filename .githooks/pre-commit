@@ -1,0 +1,54 @@
+#!/bin/sh
+# Blocks commits that contain secrets, junk files, big files or conflict markers.
+# POSIX sh only, so it runs in Git Bash (Windows), macOS and Linux.
+# Enable once per clone: git config core.hooksPath .githooks
+
+fail=0
+block() {
+  echo "pre-commit: $1" >&2
+  fail=1
+}
+
+# Staged files that are added, copied, modified or renamed, one per line
+files=$(git -c core.quotePath=false diff --cached --name-only --diff-filter=ACMR)
+newline='
+'
+old_ifs=$IFS
+IFS=$newline
+for f in $files; do
+  case "$f" in
+    .env.example) ;;
+    .env|.env.*|*/.env|*/.env.*)
+      block "$f looks like an env file with secrets. Commit a .env.example with placeholders instead." ;;
+    *.pem|*.key|*id_rsa*|*id_ed25519*)
+      block "$f looks like a private key." ;;
+    node_modules/*|*/node_modules/*|dist/*|build/*)
+      block "$f is generated or installed output." ;;
+    .DS_Store|*/.DS_Store|Thumbs.db|*/Thumbs.db|desktop.ini|*/desktop.ini)
+      block "$f is an OS junk file." ;;
+  esac
+  if [ -f "$f" ]; then
+    size=$(git cat-file -s ":$f" 2>/dev/null || echo 0)
+    if [ "$size" -gt 5242880 ]; then
+      block "$f is larger than 5 MB."
+    fi
+  fi
+done
+IFS=$old_ifs
+
+# Lines added by this commit
+added=$(git diff --cached -U0 --no-color --diff-filter=ACMR | grep '^+' | grep -v '^+++')
+
+if printf '%s\n' "$added" | grep -Eq '^\+(<<<<<<<|>>>>>>>)( |$)'; then
+  block "conflict markers (<<<<<<< or >>>>>>>) are staged. Resolve the conflict first."
+fi
+
+if printf '%s\n' "$added" | grep -Eq '(sk_live_[A-Za-z0-9]+|sk_test_[A-Za-z0-9]{10,}|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16}|xox[abpr]-[A-Za-z0-9-]{10,}|-----BEGIN [A-Z ]*PRIVATE KEY-----)'; then
+  block "a line looks like an API key, token or private key."
+fi
+
+if [ "$fail" -ne 0 ]; then
+  echo "pre-commit: commit blocked. See the Hard limits in AGENTS.md." >&2
+  exit 1
+fi
+exit 0

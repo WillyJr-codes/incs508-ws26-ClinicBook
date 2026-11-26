@@ -1,0 +1,48 @@
+#!/bin/sh
+# Blocks pushes to main, branch or tag deletions, and force pushes
+# (any push that would drop commits from the remote branch).
+# POSIX sh only, so it runs in Git Bash (Windows), macOS and Linux.
+
+is_zero() {
+  case "$1" in
+    *[!0]*) return 1 ;;
+    *) return 0 ;;
+  esac
+}
+
+fail=0
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [ -z "$remote_ref" ] && continue
+
+  if [ "$remote_ref" = "refs/heads/main" ]; then
+    echo "pre-push: pushing to main is blocked. Push to Itr1; the repo owner updates main." >&2
+    fail=1
+    continue
+  fi
+
+  if is_zero "$local_sha"; then
+    echo "pre-push: deleting $remote_ref on the remote is blocked." >&2
+    fail=1
+    continue
+  fi
+
+  # New branch on the remote: nothing can be overwritten
+  is_zero "$remote_sha" && continue
+
+  if ! git cat-file -e "$remote_sha^{commit}" 2>/dev/null; then
+    echo "pre-push: the remote $remote_ref has commits you do not have. Run: git pull --rebase origin ${remote_ref#refs/heads/}" >&2
+    fail=1
+    continue
+  fi
+
+  if ! git merge-base --is-ancestor "$remote_sha" "$local_sha"; then
+    echo "pre-push: this push would overwrite commits on $remote_ref (a force push). Run: git pull --rebase origin ${remote_ref#refs/heads/}, then push normally." >&2
+    fail=1
+  fi
+done
+
+if [ "$fail" -ne 0 ]; then
+  echo "pre-push: push blocked. See the Hard limits in AGENTS.md." >&2
+  exit 1
+fi
+exit 0
