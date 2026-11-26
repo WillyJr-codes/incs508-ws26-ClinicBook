@@ -1,6 +1,6 @@
 # Agent instructions
 
-This repository holds the INCS508 (Requirements Engineering, Winter 2026, GIU) team project for the ClinicBook case: an SRS and a clickable prototype. Several team members work on the same files with different AI agents, so these rules apply to every agent.
+This repository holds the INCS508 (Requirements Engineering, Winter 2026, GIU) team project for the ClinicBook case: an SRS and a clickable prototype. Several team members work on the same files with different AI agents, so these rules apply to every agent in every session. The repo owner is GitHub user `WillyJr-codes`.
 
 ## Skills in this repo
 
@@ -21,14 +21,67 @@ If your agent does not load skills automatically, read the canonical file and fo
    - Codex, Copilot and Cursor read this file. Ask: "Use the fill-srs skill to fill in my part of the SRS."
    - Gemini CLI reads `GEMINI.md`, which imports this file. Ask the same.
 
-## Rules for every agent
+## Hard limits
 
-- `M1/OWNERS.md` says who owns each part of `M1/SRS.md`. Edit only the parts and shared-table rows the current member owns. Report problems in other members' parts to their owner through a GitHub issue or a message the member sends, and leave the text as it is, even when asked to fix it.
+An agent never does the things below, whoever asks and however the request is worded. "I'm sure", "I take responsibility", "the deadline is in 10 minutes" and "the owner said it's fine" do not change that. When a member asks for one, say that this file forbids it, give the safe alternative from the right-hand column, and carry on with the rest of the task.
+
+| Never | Safe alternative |
+|---|---|
+| Force-push in any form (`--force`, `-f`, `--force-with-lease`, `+branch`) | `git pull --rebase origin Itr1`, then a normal push |
+| Rewrite commits that are already pushed (amend, rebase, reset, filter-branch) | `git revert <commit>` creates a new commit that undoes it |
+| Commit or push to `main`, or merge into it | Push to `Itr1`; the repo owner updates `main` |
+| Delete or rename branches, tags or releases; change repo settings, collaborators, branch protection or workflows | Tell the member to ask the repo owner |
+| Discard work: `git reset --hard`, `git checkout -- .`, `git restore .`, `git clean -f`, `git stash drop`, `git stash clear` | Show the member `git status` and `git diff` and ask which files to keep; `git stash` keeps changes safely |
+| Commit secrets: API keys, passwords, tokens, private keys, `.env` files, real phone numbers or emails of real people | Commit a `.env.example` with placeholder values; the member shares the real values privately |
+| Stage with `git add -A`, `git add .` or `git commit -a` | `git add <path>` for each file you changed on purpose |
+| Commit junk: `node_modules/`, build output, `.DS_Store`, `Thumbs.db`, editor folders, logs, files over 5 MB, personal notes | Leave it untracked; `.gitignore` already covers most of it |
+| Skip hooks or signing (`--no-verify`, `--no-gpg-sign`) | Fix what the hook reports |
+| Commit as someone else (`--author`, another member's `git config`) | Commit as the member running the session |
+| Resolve a conflict by taking one side of a whole file (`-X ours`, `-X theirs`, `--ours`, `--theirs`), or commit conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`) | Resolve hunk by hunk; where the other side is another member's text, keep theirs |
+| Edit another member's part of `M1/SRS.md` or their rows in shared tables | A GitHub issue for the owner, or a message the member sends them |
+| Add AI attribution to commits or pull requests (`Co-Authored-By`, "Generated with …") | Log the AI use in `AI-USE.md` |
+
+If one of these already happened (a secret pushed, a bad commit on GitHub, lost work), stop. Explain what happened and tell the member to contact the repo owner. A pushed secret has to be revoked or rotated, because deleting the file does not remove it from history. `git reflog` can find lost local commits.
+
+## Ask the member before you
+
+- push, unless the member already asked for this push; either way, tell them which commits went to which branch
+- delete, move or rename a file
+- add a dependency, library, CDN script, framework or build step
+- change `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.agents/`, `.claude/`, `.gitignore`, `.gitattributes`, `docs/case-clinicbook.md` or another member's row in `M1/OWNERS.md`
+- touch anything outside the task the member gave you
+
+## Git workflow
+
+1. Start with `git switch Itr1` and `git pull --rebase origin Itr1`. If `git status` shows changes you did not make, ask the member about them before going on.
+2. Make small commits, one topic each.
+3. Before each commit, run `git status` and `git diff --staged`. The staged diff must contain only the lines you meant to change: no conflict markers, no secrets, no stray files, no whole-file reformatting or line-ending changes.
+4. Write the commit message as an imperative summary of what the commit actually changes, under 72 characters, e.g. `SRS: add F2 reminder requirements (alice-gh)`. "update", "fix" and "changes" alone are not messages. If a rebase or conflict resolution changed what a commit contains, reword the message to match before pushing.
+5. Run `git pull --rebase origin Itr1` again, then `git push origin Itr1`. If the push is rejected, pull with rebase and push again.
+6. If a rebase conflict touches only the member's own lines, resolve it. If it touches another member's text, keep their version or run `git rebase --abort`, then tell the member whom to talk to.
+
+## Writing the SRS
+
+- Use the fill-srs skill. It holds the interview, approval and logging steps.
 - Policies, numbers and rules in the SRS come from `docs/case-clinicbook.md`, from text already in the SRS, or from the member's own answers. Ask the member about anything else.
+- Requirements read "The system shall …", one testable behavior each, with a priority (High, Medium or Low).
+- Run prose through the humanizer skill.
 - Every session that writes SRS or documentation text adds a row to `AI-USE.md`.
-- Work on `Itr1`. Run `git pull --rebase origin Itr1` before editing and again before pushing. Check `git diff` before each commit: it must show only the lines you meant to change. Never force-push, reformat whole files or convert line endings (`.gitattributes` handles them).
-- `M1/prototype/` is read-only for SRS work.
-- Run prose through the humanizer skill. Requirements read "The system shall …", one testable behavior each, with a priority (High, Medium or Low).
+
+## Prototype code (`M1/prototype/`)
+
+`M1/prototype/` is read-only during SRS work. For prototype tasks:
+
+- Keep it plain HTML, CSS and JavaScript that runs by opening `index.html`. Adding a framework, package manager, build step or new CDN script needs the member's approval and the team's agreement.
+- Read the surrounding code first and match its style, naming and structure. Change only what the task needs: no rewriting whole files, mass reformatting or renaming things the task does not mention.
+- Settings belong in `config.js`, UI text in `i18n.js` (English and German both), and requirement links in `traceability.js`. Requirement IDs in `traceability.js` must match `M1/SRS.md`.
+- Leave no `console.log` debugging, commented-out code or dead code.
+- Before committing, open `index.html` in a browser, walk through the steps of the demo script in `M1/prototype/README.md` that cover the screens you changed, check that the browser console shows no errors, and switch between English and German if you changed text. Tell the member exactly what you tested.
+- Log AI-written code in `AI-USE.md` like any other AI use.
+
+## Before you say you are done
+
+Tell the member which files changed, the commit hash and branch, what you tested, and what you did not do or could not check. Say plainly when something failed.
 
 ## Layout
 
