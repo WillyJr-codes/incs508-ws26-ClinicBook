@@ -26,10 +26,11 @@ Do the steps in order. Steps 3 to 7 repeat for each part the member owns.
 
 ### 1. Sync and identify
 
-1. Run `git status --short`. If `M1/SRS.md`, `M1/OWNERS.md`, `README.md` or `AI-USE.md` has uncommitted changes, show them to the member and ask what to do before going on.
-2. Run `git switch Itr1`, then `git pull --rebase origin Itr1`.
-3. Read `git config user.email`, `git config user.name`, and `gh api user -q .login` if `gh` is installed. Match them against the Members table in `M1/OWNERS.md`.
-4. Tell the member who you think they are and which parts they own, and ask them to confirm. If there is no match, ask for their GitHub username, full name and student ID, and add their Members row in step 2.
+1. Run `git config core.hooksPath`. If it does not print `.githooks`, run `git config core.hooksPath .githooks` so the repo's safety hooks are on. Never bypass them; if a hook blocks a commit or push, fix what it reports.
+2. Run `git status --short`. If `M1/SRS.md`, `M1/OWNERS.md`, `README.md` or `AI-USE.md` has uncommitted changes, show them to the member and ask what to do before going on.
+3. Run `git switch Itr1`, then `git pull --rebase origin Itr1`.
+4. Read `git config user.email`, `git config user.name`, and `gh api user -q .login` if `gh` is installed. Match them against the Members table in `M1/OWNERS.md`.
+5. Tell the member who you think they are and which parts they own, and ask them to confirm. If there is no match, ask for their GitHub username, full name and student ID, and add their Members row in step 2.
 
 ### 2. Claim (only if the member wants a part they don't own yet)
 

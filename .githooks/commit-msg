@@ -1,0 +1,32 @@
+#!/bin/sh
+# Blocks vague commit messages and AI attribution lines.
+# POSIX sh only, so it runs in Git Bash (Windows), macOS and Linux.
+
+msgfile="$1"
+# The message without comment lines and blank lines
+msg=$(grep -v '^#' "$msgfile" | sed '/^[[:space:]]*$/d')
+subject=$(printf '%s\n' "$msg" | head -n 1)
+
+if [ -z "$subject" ]; then
+  echo "commit-msg: the commit message is empty." >&2
+  exit 1
+fi
+
+lower=$(printf '%s' "$subject" | tr 'A-Z' 'a-z' | sed 's/[[:space:].!]*$//')
+case "$lower" in
+  update|updates|updated|fix|fixes|fixed|change|changes|wip|stuff|commit|test|edit|edits|asdf|.)
+    echo "commit-msg: \"$subject\" does not say what changed. Example: SRS: add F2 reminder requirements (alice-gh)" >&2
+    exit 1 ;;
+esac
+
+if [ "${#subject}" -lt 10 ]; then
+  echo "commit-msg: \"$subject\" is too short to say what changed." >&2
+  exit 1
+fi
+
+if printf '%s\n' "$msg" | grep -Eiq '^co-authored-by:.*(claude|anthropic|openai|chatgpt|copilot|gemini|cursor|codex)|generated with \[?(claude|chatgpt|copilot|gemini|cursor|codex)'; then
+  echo "commit-msg: remove the AI attribution line. AI use is logged in AI-USE.md instead." >&2
+  exit 1
+fi
+
+exit 0

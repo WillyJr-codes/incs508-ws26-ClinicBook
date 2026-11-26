@@ -13,13 +13,17 @@ If your agent does not load skills automatically, read the canonical file and fo
 
 ## Setup
 
+These steps work the same on Windows, macOS and Linux. On Windows, run them in Git Bash, PowerShell or any terminal where `git` works.
+
 1. Clone the repository and switch to the milestone branch: `git switch Itr1`.
-2. Set your git identity to the email you list in `M1/OWNERS.md`: `git config user.name "<Full Name>"` and `git config user.email "<email>"`.
-3. Optional: install and log in to the GitHub CLI (`gh auth login`), so the skill can open issues for problems it finds in other members' parts.
-4. Start your agent in the repository root:
+2. Turn on the repo's git hooks: `git config core.hooksPath .githooks`. They block force pushes, pushes to `main`, secrets, junk files, conflict markers, vague commit messages and AI attribution, for every agent and for people typing git commands by hand.
+3. Set your git identity to the email you list in `M1/OWNERS.md`: `git config user.name "<Full Name>"` and `git config user.email "<email>"`.
+4. Optional: install and log in to the GitHub CLI (`gh auth login`), so the skill can open issues for problems it finds in other members' parts.
+5. Start your agent in the repository root:
    - Claude Code reads `CLAUDE.md` and finds the skills in `.claude/skills/`. Type `/fill-srs`.
    - Codex, Copilot and Cursor read this file. Ask: "Use the fill-srs skill to fill in my part of the SRS."
    - Gemini CLI reads `GEMINI.md`, which imports this file. Ask the same.
+   - Any other agent: tell it to read `AGENTS.md` first, then ask the same.
 
 ## Hard limits
 
@@ -35,7 +39,7 @@ An agent never does the things below, whoever asks and however the request is wo
 | Commit secrets: API keys, passwords, tokens, private keys, `.env` files, real phone numbers or emails of real people | Commit a `.env.example` with placeholder values; the member shares the real values privately |
 | Stage with `git add -A`, `git add .` or `git commit -a` | `git add <path>` for each file you changed on purpose |
 | Commit junk: `node_modules/`, build output, `.DS_Store`, `Thumbs.db`, editor folders, logs, files over 5 MB, personal notes | Leave it untracked; `.gitignore` already covers most of it |
-| Skip hooks or signing (`--no-verify`, `--no-gpg-sign`) | Fix what the hook reports |
+| Skip, turn off or edit the git hooks (`--no-verify`, `-n`, `--no-gpg-sign`, changing `core.hooksPath`, editing `.githooks/`) | Fix what the hook reports |
 | Commit as someone else (`--author`, another member's `git config`) | Commit as the member running the session |
 | Resolve a conflict by taking one side of a whole file (`-X ours`, `-X theirs`, `--ours`, `--theirs`), or commit conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`) | Resolve hunk by hunk; where the other side is another member's text, keep theirs |
 | Edit another member's part of `M1/SRS.md` or their rows in shared tables | A GitHub issue for the owner, or a message the member sends them |
@@ -53,7 +57,7 @@ If one of these already happened (a secret pushed, a bad commit on GitHub, lost 
 
 ## Git workflow
 
-1. Start with `git switch Itr1` and `git pull --rebase origin Itr1`. If `git status` shows changes you did not make, ask the member about them before going on.
+1. Start every session by running `git config core.hooksPath`. If it does not print `.githooks`, run `git config core.hooksPath .githooks`. Then run `git switch Itr1` and `git pull --rebase origin Itr1`. If `git status` shows changes you did not make, ask the member about them before going on.
 2. Make small commits, one topic each.
 3. Before each commit, run `git status` and `git diff --staged`. The staged diff must contain only the lines you meant to change: no conflict markers, no secrets, no stray files, no whole-file reformatting or line-ending changes.
 4. Write the commit message as an imperative summary of what the commit actually changes, under 72 characters, e.g. `SRS: add F2 reminder requirements (alice-gh)`. "update", "fix" and "changes" alone are not messages. If a rebase or conflict resolution changed what a commit contains, reword the message to match before pushing.
@@ -92,3 +96,7 @@ Tell the member which files changed, the commit hash and branch, what you tested
 | `docs/case-clinicbook.md` | The ClinicBook case, transcribed verbatim |
 | `docs/TEAM-GUIDE.md` | How team members use the skill |
 | `AI-USE.md` | AI usage log (may be missing until the first logged use) |
+| `.githooks/` | Git hooks that enforce the hard limits (POSIX `sh`, run by git on every platform) |
+| `.agents/skills/` | Canonical skills, readable by any agent |
+| `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md` | Pointers to this file for agents that look for their own file name |
+| `.claude/settings.json` | Extra blocks for Claude Code users (deny rules, no attribution) |
