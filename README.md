@@ -23,6 +23,19 @@ Requirements Engineering (INCS508), Winter 2026, German International University
 
 **Run the prototype:** open `M1/prototype/index.html` in a browser. See [`M1/prototype/README.md`](M1/prototype/README.md) for the demo script.
 
+## First-time setup
+
+Run these once after cloning (Windows, macOS or Linux):
+
+```sh
+git switch Itr1
+git config core.hooksPath .githooks
+git config user.name "Your Full Name"
+git config user.email "the email you list in M1/OWNERS.md"
+```
+
+The second line turns on the repo's safety hooks. They block force pushes, pushes to `main`, secrets, junk files, conflict markers, vague commit messages and AI attribution. Requirements and the rest of the setup are in [`docs/TEAM-GUIDE.md`](docs/TEAM-GUIDE.md).
+
 ## Writing your part of the SRS
 
 Each member owns parts of `M1/SRS.md`, listed in [`M1/OWNERS.md`](M1/OWNERS.md). Edit only your own parts and your own rows in shared tables and in the Team table above.
