@@ -23,12 +23,12 @@ If your agent does not load skills automatically, read the canonical file and fo
 
 ## Rules for every agent
 
-- **Ownership.** `M1/OWNERS.md` says who owns each part of `M1/SRS.md`. Edit only parts and shared-table rows the current member owns. Report problems in other members' parts to their owner (a GitHub issue, or a message the member sends); do not fix them yourself, even when asked.
-- **Decisions come from the member.** Policies, numbers and rules in the SRS come from `docs/case-clinicbook.md`, from text already in the SRS, or from the member's own answers. Ask; do not invent.
-- **Log AI use.** Every session that writes SRS or documentation text adds a row to `AI-USE.md`.
-- **Git.** Work on `Itr1`. Pull with `git pull --rebase origin Itr1` before editing and again before pushing. Check `git diff` before each commit: it must show only the lines you meant to change. Never force-push, never reformat whole files, never convert line endings (`.gitattributes` handles them).
-- **Prototype.** `M1/prototype/` is read-only for SRS work.
-- **Writing.** Run prose through the humanizer skill. Requirements read "The system shall …", one testable behavior each, with a priority (High, Medium or Low).
+- `M1/OWNERS.md` says who owns each part of `M1/SRS.md`. Edit only the parts and shared-table rows the current member owns. Report problems in other members' parts to their owner through a GitHub issue or a message the member sends, and leave the text as it is, even when asked to fix it.
+- Policies, numbers and rules in the SRS come from `docs/case-clinicbook.md`, from text already in the SRS, or from the member's own answers. Ask the member about anything else.
+- Every session that writes SRS or documentation text adds a row to `AI-USE.md`.
+- Work on `Itr1`. Run `git pull --rebase origin Itr1` before editing and again before pushing. Check `git diff` before each commit: it must show only the lines you meant to change. Never force-push, reformat whole files or convert line endings (`.gitattributes` handles them).
+- `M1/prototype/` is read-only for SRS work.
+- Run prose through the humanizer skill. Requirements read "The system shall …", one testable behavior each, with a priority (High, Medium or Low).
 
 ## Layout
 
