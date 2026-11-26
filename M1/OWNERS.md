@@ -7,7 +7,7 @@ Who owns which part of `M1/SRS.md`. Only the owner edits a part. Claim a free pa
 | GitHub username | Full name | Git email(s) |
 |---|---|---|
 | WillyJr-codes | Mohammed Walid | mowalid420@gmail.com |
-| | | |
+| Xart3mis | Yassin Diab | yassin.diab@student.giu-uni.de |
 | | | |
 | | | |
 
@@ -18,7 +18,7 @@ The owner of a feature owns its subsection under chapter 4 and every requirement
 | Feature | Name | Owner |
 |---|---|---|
 | F1 | View Available Slots and Book an Appointment | WillyJr-codes |
-| F2 | | |
+| F2 | Change or Cancel an Appointment | Xart3mis |
 | F3 | | |
 | F4 | | |
 | F5 | | |
@@ -30,11 +30,11 @@ The owner of a section in chapter 5 also owns every requirement whose **Feature*
 | Section | Owner |
 |---|---|
 | Title block (Version, Date, Team) | |
-| 1.1 Purpose | |
-| 1.2 Document Conventions | |
-| 1.3 Intended Audience | |
-| 1.4 Product Scope | |
-| 1.5 References | |
+| 1.1 Purpose | Xart3mis |
+| 1.2 Document Conventions | Xart3mis |
+| 1.3 Intended Audience | Xart3mis |
+| 1.4 Product Scope | Xart3mis |
+| 1.5 References | Xart3mis |
 | 2.1 Product Perspective | |
 | 2.2 Product Functions | |
 | 2.3 User Classes and Characteristics | |
