@@ -64,6 +64,18 @@ If one of these already happened (a secret pushed, a bad commit on GitHub, lost 
 5. Run `git pull --rebase origin Itr1` again, then `git push origin Itr1`. If the push is rejected, pull with rebase and push again.
 6. If a rebase conflict touches only the member's own lines, resolve it. If it touches another member's text, keep their version or run `git rebase --abort`, then tell the member whom to talk to.
 
+### Always work on the latest remote
+
+Teammates push to `Itr1` all day. A pull at session start is not enough, because the remote can move while you interview the member or wait for approval. Edit only a copy that matches the latest `origin/Itr1`.
+
+1. Before every edit to a tracked file, run `git fetch origin`, then `git status -sb`. The first line must read `## Itr1...origin/Itr1` with no `[behind N]`. If it shows `behind`, run `git pull --rebase origin Itr1` before you edit.
+2. Pull again just before you write text the member has approved, and after any pause, resumed session or long wait. Do not write from a copy you pulled earlier.
+3. After every pull that brought new commits, read the file again before you edit it. Take IDs (next free R-number, TBD number, Revision History version) from the file as it is now, not from an earlier read.
+4. If uncommitted changes block the pull, run `git stash push <path>` for those files, pull, then `git stash pop`. Never discard them. If `git stash pop` conflicts, stop and show the member.
+5. Commit and push as soon as a change is approved and written. Do not keep local commits unpushed, and do not start a second topic on top of an unpushed one.
+6. Never edit on `main`, on a detached HEAD or on any other local branch. If `git status -sb` does not show `Itr1...origin/Itr1`, run `git switch Itr1` and pull first.
+7. If `git fetch` or `git pull` fails (no network, no access), stop editing shared files and tell the member. Do not continue on a copy you cannot check against the remote.
+
 ## Writing the SRS
 
 - Use the fill-srs skill. It holds the interview, approval and logging steps.
