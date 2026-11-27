@@ -34,6 +34,7 @@ Do the steps in order. Steps 3 to 7 repeat for each part the member owns.
 
 ### 2. Claim (only if the member wants a part they don't own yet)
 
+- Sync first (see "Syncing with the remote" below), then check that the Owner cell is still empty in the pulled file.
 - Unclaimed part (Owner cell empty): put the member's username in the Owner cell, commit only `M1/OWNERS.md` with the message `OWNERS: <username> claims <parts>`, then push. Do this before drafting, so teammates see the claim.
 - Part owned by someone else: do not claim it and do not write it. Tell the member who owns it and that the owner has to agree to hand it over in `M1/OWNERS.md` first.
 
@@ -72,6 +73,13 @@ Read all of `.agents/skills/humanizer/SKILL.md` (every one of its 26 patterns, i
 
 Show the member the humanized text for the part, plus every shared-area row you will add. That is the exact text that goes into the files: after approval, write it unchanged, with no further humanizer pass or rewording. Write only after the member approves. If they change anything, apply the change and show the text again.
 
+After approval, sync again before you write (see "Syncing with the remote" below), because teammates may have pushed while the member read the draft. Then read `M1/SRS.md` again and check the pulled file:
+
+- If someone took the R-numbers, TBD numbers or Revision History version you planned to use, move the member's items to the next free numbers. Keep the approved text otherwise unchanged and report the changed IDs (old → new) in step 10.
+- If a teammate's new text now conflicts with the approved text (the same glossary term, a contradicting rule, an edit inside the member's part), stop before writing, show the member what changed and agree what to do.
+
+Commit and push (steps 9 and 10) right after writing. Do not leave written text uncommitted while you do something else.
+
 ### 8. Other members' text
 
 Never edit, reword, move or reformat another member's part or rows, even when the member asks or says the owner won't mind. For each conflict or error you found in someone else's part:
@@ -107,9 +115,19 @@ If the file says that no AI was used for `M1/SRS.md`, replace that sentence with
 1. Run `git diff`. Every changed line must be inside the member's own parts or rows, the AI-USE row, or the member's README row. If any other line changed, undo that change before committing. Never convert line endings or reformat a file.
 2. README: edit only the member's own Team row (`| Student ID | Full name | GitHub username |`). Fill the first empty row if they have none.
 3. Commit `M1/SRS.md`, `AI-USE.md` and `README.md` (if changed) with the message `SRS: <parts> (<username>)`.
-4. Run `git pull --rebase origin Itr1`, then `git push origin Itr1`.
+4. Run `git log --oneline origin/Itr1..HEAD` and check that only this session's commits are listed. Sync (see "Syncing with the remote" below), then run `git push origin Itr1`. If the push is rejected, sync and push again.
 5. If the rebase conflicts and the conflict is only that someone took the same new R-number, renumber the member's own requirements to the next free numbers, update their Overview rows, and continue the rebase. For any other conflict, run `git rebase --abort` and tell the member what conflicted.
 6. Finish by telling the member what was written, the commit hash, any requirement IDs that changed since they approved the text (old → new), and any issues or messages from step 8.
+
+## Syncing with the remote
+
+Teammates push to `Itr1` throughout the day, so a pull at the start of the session is not enough. Sync before every write to `M1/OWNERS.md`, `M1/SRS.md`, `README.md` or `AI-USE.md`, after any pause or resumed session, and before every push. The full rules are in `AGENTS.md` under "Always work on the latest remote".
+
+1. Run `git fetch origin`, then `git status -sb`. The first line must read `## Itr1...origin/Itr1`. If it shows another branch or a detached HEAD, run `git switch Itr1`.
+2. If it shows `[behind N]`, or before a push, run `git pull --rebase origin Itr1`.
+3. If uncommitted files block the pull (for example a member's own edit to another file), run `git stash push <path>` for those files, pull, then `git stash pop`. Never discard them. If `git stash pop` conflicts, stop and show the member.
+4. If the pull brought new commits, read the files you are about to edit again before editing them.
+5. If `git fetch` or `git pull` fails, stop writing and tell the member. Do not write to a copy you cannot check against the remote.
 
 ## Question bank
 
@@ -134,3 +152,5 @@ Stop and go back to step 4 if you are about to:
 - skip the interview because the member is in a hurry
 - edit a line outside the member's own parts or rows, including "just fixing" an obvious error
 - write to the files before the member has seen and approved the final text
+
+Stop and sync first (see "Syncing with the remote") if you are about to write to a file or push without a fetch since the member's last reply.
