@@ -14,13 +14,13 @@ If your agent does not load skills automatically, read the canonical file and fo
 
 Impeccable is a third-party skill (https://impeccable.style, Apache 2.0). Each tool has its own build, because the builds differ in their internal paths:
 
-| Tool | Impeccable skill folder |
-|---|---|
-| Codex and any agent that reads `.agents/` | `.agents/skills/impeccable/` |
-| Claude Code | `.claude/skills/impeccable/` |
-| GitHub Copilot | `.github/skills/impeccable/` |
-| Gemini CLI | `.gemini/skills/impeccable/` |
-| Cursor | `.cursor/skills/impeccable/` |
+| Tool | Impeccable skill folder | Impeccable subagents |
+|---|---|---|
+| Codex and any agent that reads `.agents/` | `.agents/skills/impeccable/` | `.agents/skills/impeccable/agents/*.toml` (inside the skill) |
+| Claude Code | `.claude/skills/impeccable/` | `.claude/agents/impeccable-*.md` |
+| GitHub Copilot | `.github/skills/impeccable/` | `.github/agents/impeccable-*.agent.md` |
+| Gemini CLI | `.gemini/skills/impeccable/` | none; the skill runs these roles itself |
+| Cursor | `.cursor/skills/impeccable/` | `.cursor/agents/impeccable-*.md` |
 
 An agent without its own folder reads `.agents/skills/impeccable/SKILL.md`. Cursor and Gemini CLI may need Agent Skills turned on in their settings.
 
@@ -191,9 +191,36 @@ Rules for agents:
 - Impeccable works inside this repo's limits: plain HTML, CSS and JavaScript, no framework, build step or new CDN script (see "Prototype code"), English and German text in `i18n.js`, and the SRS rules for what each user class may see. If a playbook suggests something these rules forbid, follow the rules and tell the member.
 - Before you report UI work as done, run `audit` and `critique` on every screen you changed. Fix P0 and P1 findings, and list any you leave open.
 - The design hook is not installed, so nothing checks UI edits automatically. The checks above replace it.
+- Do not edit the impeccable subagent files. They are upstream files, like the skill folders.
 - The first run downloads the impeccable engine into `~/.impeccable/bin/`, checked against `scripts/engine-checksums.txt`. Set `DO_NOT_TRACK=1` to switch off its anonymous usage telemetry.
 - Commit `PRODUCT.md`, `DESIGN.md` and the shared files under `.impeccable/` (`config.json`, `design.json`, `surfaces/*.md`, `critique/ignore.md`). Leave the rest of `.impeccable/` (screenshots, caches, reports) untracked.
-- Do not edit the impeccable skill folders. They are upstream files. To update them, ask the member, then copy the new build from https://github.com/pbakaus/impeccable into all five folders in one commit that names the upstream version.
+- Do not edit the impeccable skill folders. They are upstream files. To update them, ask the member, then copy the new build from https://github.com/pbakaus/impeccable into all five skill folders and the three subagent folders (`.claude/agents/`, `.cursor/agents/`, `.github/agents/`) in one commit that names the upstream version.
+
+### Impeccable subagents
+
+Impeccable hands some steps to subagents: helpers with a narrow job that run in their own context and report back. The skill's playbooks start them at the right step, so you normally do not call them yourself.
+
+| Subagent | What it does | Started during |
+|---|---|---|
+| `impeccable-finish-reviewer` | Fresh-eyes review of a finished build against its direction and quality bar. Returns an ordered list of fixes and edits nothing. | The end of a new build |
+| `impeccable-motion-reviewer` | Reviews captured animation for timing, continuity and reduced-motion behavior. Returns fixes with evidence. | `animate` |
+| `impeccable-documenter` | Writes `DESIGN.md` from the finished screens, not from intentions. | The end of a new build |
+| `impeccable-asset-producer` | Turns approved mock references into clean reusable images without redesigning them. | A build from an approved comp |
+| `impeccable-manual-edit-applier` | Applies text edits picked in live mode to the source files. | `live` |
+
+How each tool runs them:
+
+- Claude Code: the skill starts them itself. You can also ask for one by name, for example "use the impeccable-finish-reviewer subagent on the booking screen". `/agents` lists them.
+- Codex: the skill finds them inside its own folder, named with underscores (`impeccable_finish_reviewer`). Codex runs subagents only when the member allows sub-agents or parallel work. If that is off, the skill asks once and stops; tell the member and let them decide.
+- Cursor: the agent may delegate to them on its own, or the member types `/impeccable-finish-reviewer` (or another name).
+- GitHub Copilot: say "Use the impeccable-finish-reviewer agent" (or another name), or let the skill request it.
+- Gemini CLI and agents with no subagent support: the skill does the same work inline from `reference/degraded/`. The result is the same; it uses more of the main context.
+
+Rules:
+
+- Reviewer subagents (`finish-reviewer`, `motion-reviewer`) only report. The main agent applies their fixes, inside this repo's limits, and tells the member which fixes it applied or skipped.
+- Pass a subagent only the files its job needs: the screens you changed, `PRODUCT.md`, `DESIGN.md` and the captures. Never pass `.env` files, credentials or personal data.
+- The `documenter` writes `DESIGN.md`, which the whole team shares. Show the member the result before committing it.
 
 ## Before you say you are done
 
@@ -211,6 +238,7 @@ Tell the member which files changed, the commit hash and branch, what you tested
 | `.githooks/` | Git hooks that enforce the hard limits (POSIX `sh`, run by git on every platform) |
 | `.agents/skills/` | Canonical skills, readable by any agent, and the generic impeccable build |
 | `.claude/skills/impeccable/`, `.github/skills/impeccable/`, `.gemini/skills/impeccable/`, `.cursor/skills/impeccable/` | Impeccable builds for Claude Code, Copilot, Gemini CLI and Cursor (upstream files, do not edit) |
+| `.claude/agents/`, `.cursor/agents/`, `.github/agents/` | Impeccable subagents for Claude Code, Cursor and Copilot (upstream files, do not edit) |
 | `PRODUCT.md`, `DESIGN.md` | Product and design context that impeccable reads (created by `/impeccable init` and `document`) |
 | `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md` | Pointers to this file for agents that look for their own file name |
 | `.claude/settings.json` | Extra blocks for Claude Code users (deny rules, no attribution) |
