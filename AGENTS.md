@@ -8,8 +8,21 @@ This repository holds the INCS508 (Requirements Engineering, Winter 2026, GIU) t
 |---|---|---|
 | fill-srs | `.agents/skills/fill-srs/SKILL.md` | A member asks to fill in, draft or update their part of `M1/SRS.md`, claim a section or feature, or add their README team row |
 | humanizer | `.agents/skills/humanizer/SKILL.md` | Any prose you write for the SRS or the docs (fill-srs calls it for you) |
+| impeccable | Your tool's own copy (see below) | Any UI, UX or design work. See "UI, UX and design work" |
 
-If your agent does not load skills automatically, read the canonical file and follow it. The copies in `.claude/skills/` are stubs that point to the canonical files; edit only the canonical ones.
+If your agent does not load skills automatically, read the canonical file and follow it. The fill-srs and humanizer copies in `.claude/skills/` are stubs that point to the canonical files; edit only the canonical ones.
+
+Impeccable is a third-party skill (https://impeccable.style, Apache 2.0). Each tool has its own build, because the builds differ in their internal paths:
+
+| Tool | Impeccable skill folder |
+|---|---|
+| Codex and any agent that reads `.agents/` | `.agents/skills/impeccable/` |
+| Claude Code | `.claude/skills/impeccable/` |
+| GitHub Copilot | `.github/skills/impeccable/` |
+| Gemini CLI | `.gemini/skills/impeccable/` |
+| Cursor | `.cursor/skills/impeccable/` |
+
+An agent without its own folder reads `.agents/skills/impeccable/SKILL.md`. Cursor and Gemini CLI may need Agent Skills turned on in their settings.
 
 ## Setup
 
@@ -131,6 +144,7 @@ Rules for agents:
 
 `M1/prototype/` is read-only during SRS work. For prototype tasks:
 
+- Invoke the impeccable skill for every change to a screen, as described in "UI, UX and design work".
 - Keep it plain HTML, CSS and JavaScript that runs by opening `index.html`. Adding a framework, package manager, build step or new CDN script needs the member's approval and the team's agreement.
 - Read the surrounding code first and match its style, naming and structure. Change only what the task needs: no rewriting whole files, mass reformatting or renaming things the task does not mention.
 - Settings belong in `config.js`, UI text in `i18n.js` (English and German both), and requirement links in `traceability.js`. Requirement IDs in `traceability.js` must match `M1/SRS.md`.
@@ -153,6 +167,34 @@ The PDRE principles come from code. Apply them to the prototype in their origina
 - Comment why, not what. Leave no TODO notes, stubs or half-built branches; finish them or tell the member they are open.
 - Each requirement a screen implements is listed in `traceability.js`, so code and SRS stay in step.
 
+## UI, UX and design work: Impeccable
+
+Every task that creates or changes what a user sees or does goes through the impeccable skill: prototype screens, layout, styling, colors, fonts, motion, UI text, forms, empty and error states, accessibility, and design reviews. Invoke it before you edit and follow its playbook. Do not design or restyle UI from your own defaults. Impeccable is for interfaces only; SRS prose uses fill-srs and humanizer.
+
+How to invoke: `/impeccable <command> <target>` in Claude Code, Copilot, Gemini CLI and Cursor; `$impeccable <command> <target>` in Codex. `/impeccable` alone lists the commands. If your agent has no slash commands, read its `SKILL.md` and follow it with the command name.
+
+Pick the command that matches the task:
+
+| Task | Command |
+|---|---|
+| Set up project context, once for the team | `init` writes `PRODUCT.md`; `document` writes `DESIGN.md` |
+| Plan a screen or flow before writing code | `shape` |
+| Build a new screen | `/impeccable` with a plain build request |
+| Review a design | `critique` (scored UX review) and `audit` (accessibility, performance, theming, responsive behavior; P0 to P3) |
+| Steer the look | `bolder`, `quieter`, `distill`, `colorize`, `typeset`, `layout`, `animate`, `delight`, `overdrive` |
+| Finish a screen | `polish` (final pass), `harden` (errors, i18n, overflow, edge cases), `clarify` (unclear UI text), `adapt` (screen sizes), `optimize` (performance), `onboard` (first run and empty states) |
+| Pull repeated patterns into the design system | `extract` |
+
+Rules for agents:
+
+- Before you edit UI, check that `PRODUCT.md` and `DESIGN.md` exist at the repo root. If they are missing, tell the member and suggest `init` and `document`; the team agrees on them once, because every later command reads them.
+- Impeccable works inside this repo's limits: plain HTML, CSS and JavaScript, no framework, build step or new CDN script (see "Prototype code"), English and German text in `i18n.js`, and the SRS rules for what each user class may see. If a playbook suggests something these rules forbid, follow the rules and tell the member.
+- Before you report UI work as done, run `audit` and `critique` on every screen you changed. Fix P0 and P1 findings, and list any you leave open.
+- The design hook is not installed, so nothing checks UI edits automatically. The checks above replace it.
+- The first run downloads the impeccable engine into `~/.impeccable/bin/`, checked against `scripts/engine-checksums.txt`. Set `DO_NOT_TRACK=1` to switch off its anonymous usage telemetry.
+- Commit `PRODUCT.md`, `DESIGN.md` and the shared files under `.impeccable/` (`config.json`, `design.json`, `surfaces/*.md`, `critique/ignore.md`). Leave the rest of `.impeccable/` (screenshots, caches, reports) untracked.
+- Do not edit the impeccable skill folders. They are upstream files. To update them, ask the member, then copy the new build from https://github.com/pbakaus/impeccable into all five folders in one commit that names the upstream version.
+
 ## Before you say you are done
 
 Tell the member which files changed, the commit hash and branch, what you tested, and what you did not do or could not check. Say plainly when something failed.
@@ -167,6 +209,8 @@ Tell the member which files changed, the commit hash and branch, what you tested
 | `docs/TEAM-GUIDE.md` | How team members use the skill |
 | `AI-USE.md` | AI usage log (may be missing until the first logged use) |
 | `.githooks/` | Git hooks that enforce the hard limits (POSIX `sh`, run by git on every platform) |
-| `.agents/skills/` | Canonical skills, readable by any agent |
+| `.agents/skills/` | Canonical skills, readable by any agent, and the generic impeccable build |
+| `.claude/skills/impeccable/`, `.github/skills/impeccable/`, `.gemini/skills/impeccable/`, `.cursor/skills/impeccable/` | Impeccable builds for Claude Code, Copilot, Gemini CLI and Cursor (upstream files, do not edit) |
+| `PRODUCT.md`, `DESIGN.md` | Product and design context that impeccable reads (created by `/impeccable init` and `document`) |
 | `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md` | Pointers to this file for agents that look for their own file name |
 | `.claude/settings.json` | Extra blocks for Claude Code users (deny rules, no attribution) |
