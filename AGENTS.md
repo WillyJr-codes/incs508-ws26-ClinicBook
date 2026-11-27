@@ -71,6 +71,40 @@ If one of these already happened (a secret pushed, a bad commit on GitHub, lost 
 - Requirements read "The system shall …", one testable behavior each, with a priority (High, Medium or Low).
 - Run prose through the humanizer skill.
 - Every session that writes SRS or documentation text adds a row to `AI-USE.md`.
+- Apply the PDRE principles below to every requirement you write, and check your draft against the smell list before you show it to the member.
+
+## PDRE: Principle-Driven Requirements Engineering
+
+Source: Lecture 8 (Dr. John Zaki). It applies the code principles SOLID, KISS, DRY and YAGNI to requirements, so that the SRS does not carry immature business artifacts into design and testing. It holds at every scale: a whole section or one line of acceptance criteria.
+
+| Principle | Rule for the SRS | Wrong → right |
+|---|---|---|
+| S: Single Responsibility | One requirement owns one business need and one owner. Split a requirement that covers several needs or user classes. | "Register, pay and get a timetable by email" → three requirements |
+| O: Open/Closed | Extend an agreed requirement with a new numbered requirement. Do not rewrite it once the team has agreed on it. Log the change in Revision History. | Edit R-12 "credit card" → keep R-12, add R-12.1 "mobile wallet" |
+| L: Liskov Substitution | A detailed requirement must not contradict its parent feature or goal. If it does, change the parent or move the child to another feature. | Feature "all patients book online", one requirement "front desk only, no limit" |
+| I: Interface Segregation | Write requirements per user class. Do not force one class to review requirements it never uses. | One "dashboard for all users" → one per user class |
+| D: Dependency Inversion | Point to business abstractions and to the interface sections (3.x), not to vendors, tables or other requirements' details. | "SMS through vendor X" → "notify through the patient's chosen channel (SRS 3.4)" |
+| KISS | One reading only: clear, specific, testable. No "reasonable", "appropriate", "as needed", "etc." | "within a reasonable time" → "until 24 hours before the slot" (value from the case or the member) |
+| DRY | State each rule once, as a business rule in 5.5, and say "Applies BR-x" elsewhere. Do not repeat a number or policy in several places. | Cutoff written in three requirements → one BR, three references |
+| YAGNI | Write only what the case or a stakeholder asked for. Move other ideas to Appendix C or the backlog and mark them as not asked for. | Invented AI or multi-language feature → left out |
+
+Smells to check before you show a draft:
+
+| Smell | How to notice it | Fix with |
+|---|---|---|
+| Large Business | One requirement owns several needs or user classes | S + I |
+| Feature Envy | A requirement quotes other requirements' rules | S + D |
+| Cyclomatic Complexity | One requirement has many branches; nobody can list its test cases | KISS + S (decision table) |
+| Shotgun Surgery | One rule change means edits in many places | DRY + D + O |
+| Duplicate Business | The same need is stated twice in different words | DRY |
+| Dead Business | An obsolete or never-asked requirement is still there | YAGNI; remove it and log it in Revision History |
+
+Rules for agents:
+
+- Run the principle and smell check on your own draft and show the member the result with the text.
+- Fix a smell in the member's own part. For another member's part, do not edit; open an issue or give the member a message, as in the hard limits.
+- A policy or number that the case does not give is a TBD in Appendix C, not an invented value (KISS and YAGNI).
+- Removing a requirement is allowed only for the member's own requirements, with a Revision History row.
 
 ## Prototype code (`M1/prototype/`)
 
