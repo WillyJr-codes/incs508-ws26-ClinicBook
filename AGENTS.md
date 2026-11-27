@@ -76,6 +76,15 @@ Teammates push to `Itr1` all day. A pull at session start is not enough, because
 6. Never edit on `main`, on a detached HEAD or on any other local branch. If `git status -sb` does not show `Itr1...origin/Itr1`, run `git switch Itr1` and pull first.
 7. If `git fetch` or `git pull` fails (no network, no access), stop editing shared files and tell the member. Do not continue on a copy you cannot check against the remote.
 
+### Good commits
+
+- One logical change per commit. An SRS part, an OWNERS claim and a prototype fix are three commits.
+- Commit only a working state: the SRS renders as valid Markdown, and the prototype opens with no console errors.
+- When the reason for a change is not obvious from the summary line, add a short body after a blank line that says why.
+- Before each push, run `git log --oneline origin/Itr1..HEAD` and check that exactly the commits you mean to send are listed.
+- Keep diffs minimal: no unrelated whitespace, wrapping, reordering or line-ending changes. `.gitattributes` sets line endings; do not override it.
+- Leave generated files, editor and agent folders (such as `.omc/`, `.serena/`, `.vscode/`) and personal notes untracked.
+
 ## Writing the SRS
 
 - Use the fill-srs skill. It holds the interview, approval and logging steps.
@@ -128,6 +137,21 @@ Rules for agents:
 - Leave no `console.log` debugging, commented-out code or dead code.
 - Before committing, open `index.html` in a browser, walk through the steps of the demo script in `M1/prototype/README.md` that cover the screens you changed, check that the browser console shows no errors, and switch between English and German if you changed text. Tell the member exactly what you tested.
 - Log AI-written code in `AI-USE.md` like any other AI use.
+
+### Coding practice
+
+The PDRE principles come from code. Apply them to the prototype in their original form:
+
+- KISS: write the simplest code that does the job and that a teammate can read without you. Prefer plain functions and the browser's built-in features over clever tricks.
+- DRY: keep one source of truth. Reuse an existing helper, setting or text key instead of copying it; put a repeated value in `config.js`.
+- YAGNI: build only what the task and the SRS ask for. No speculative options, hooks or abstractions.
+- Single responsibility: one function does one thing. Split a function that handles several screens or concerns.
+- Names say what a thing is or does (`bookSlot`, `freeSlots`), not how it is built (`data2`, `handleStuff`). Use `const` by default, `let` only when a value changes, never `var` or undeclared globals.
+- Handle errors and empty states on purpose: no slots, a slot taken a moment ago, missing settings. Show the user a clear message; never fail silently.
+- Insert user or sample text with `textContent`, not `innerHTML`, so text cannot run as code.
+- Keep it accessible: every input has a label, every action works with the keyboard, focus is visible, and text has enough contrast.
+- Comment why, not what. Leave no TODO notes, stubs or half-built branches; finish them or tell the member they are open.
+- Each requirement a screen implements is listed in `traceability.js`, so code and SRS stay in step.
 
 ## Before you say you are done
 
